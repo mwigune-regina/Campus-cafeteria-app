@@ -9,6 +9,8 @@
 .history
 .svn/
 migrate_working_dir/
+thumbs.db
+desktop.ini
 
 # JVM Crash logs (Added to stop those hs_err_pid files)
 hs_err_pid*
@@ -32,13 +34,41 @@ replay_pid*
 .pub-cache/
 .pub/
 build/
+.packages
 
 # Android specific
 android/local.properties
 /android/app/debug
 /android/app/profile
 /android/app/release
+android/key.properties
+*.keystore
+*.jks
+
+# iOS specific
+ios/.DS_Store
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+Packages/
+Target/
+DerivedData/
+*.moved-aside
+*.xcuserstate
+*.xcworkspace
+!default.xcworkspace
+**/Pods/
 
 # Symbolication and Obfuscation
 app.*.symbols
 app.*.map.json
+
+# Backend specific
+/backend/.env
+/backend/node_modules/
+/backend/npm-debug.log*
+/backend/yarn-debug.log*
+/backend/yarn-error.log*

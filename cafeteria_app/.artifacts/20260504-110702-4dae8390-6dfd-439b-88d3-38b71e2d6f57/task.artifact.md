@@ -1,0 +1,21 @@
+# Task Management
+
+- [/] Restructure Flutter Project
+	- [ ] Update `pubspec.yaml` with required dependencies
+	- [ ] Create Core layer (constants, theme, utils)
+	- [ ] Create Models
+	- [ ] Create Services (REST API integration)
+	- [ ] Create Providers (State management)
+	- [ ] Implement Shared Widgets
+	- [ ] Implement Features
+		- [ ] Auth Feature (screens & widgets)
+		- [ ] Menu Feature (screens & widgets)
+		- [ ] Cart Feature (screens & widgets)
+		- [ ] Home Feature (screens & widgets)
+	- [ ] Finalize `app_router.dart` and `main.dart`
+- [ ] Design and Implement REST API Backend
+	- [ ] Setup Express server and DB config
+	- [ ] Create SQL Schema
+	- [ ] Implement Middleware (Auth & Role)
+	- [ ] Implement Controllers and Routes
+- [ ] Verification and Final Polish
