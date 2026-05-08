@@ -39,13 +39,13 @@ class LandingScreen extends StatelessWidget {
               const Spacer(flex: 3),
               CustomButton(
                 text: 'Get Started',
-                onPressed: () => context.go('/register'),
+                onPressed: () => context.push('/register'),
                 backgroundColor: AppColors.orange,
               ),
               const SizedBox(height: 14),
               CustomButton(
                 text: 'Login',
-                onPressed: () => context.go('/login'),
+                onPressed: () => context.push('/login'),
               ),
               const Spacer(flex: 1),
             ],

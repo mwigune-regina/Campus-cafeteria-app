@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../providers/menu_provider.dart';
 import '../widgets/menu_item_card.dart';
 import '../../../shared/widgets/loading_spinner.dart';
+import '../../../core/constants/app_colors.dart';
 
 class StudentMenuScreen extends StatefulWidget {
   const StudentMenuScreen({super.key});
@@ -23,20 +24,26 @@ class _StudentMenuScreenState extends State<StudentMenuScreen> {
     final menuProvider = Provider.of<MenuProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Menu')),
+      appBar: AppBar(
+        title: const Text('Menu'),
+        backgroundColor: AppColors.navyBlue,
+        foregroundColor: Colors.white,
+      ),
       body: menuProvider.isLoading
           ? const LoadingSpinner()
-          : GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: menuProvider.items.length,
-              itemBuilder: (ctx, i) => MenuItemCard(item: menuProvider.items[i]),
-            ),
+          : menuProvider.items.isEmpty 
+              ? const Center(child: Text('No items available in the menu.'))
+              : GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: menuProvider.items.length,
+                  itemBuilder: (ctx, i) => MenuItemCard(item: menuProvider.items[i]),
+                ),
     );
   }
 }

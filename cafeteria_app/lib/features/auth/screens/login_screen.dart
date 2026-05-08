@@ -25,6 +25,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.lightGray,
+      appBar: AppBar(
+        backgroundColor: AppColors.navyBlue,
+        elevation: 0,
+        leading: context.canPop() 
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => context.pop(),
+              ) 
+            : null,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -54,7 +64,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => context.push('/forgot-password'),
+                          child: const Text('Forgot Password?', style: TextStyle(color: AppColors.navyBlue)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       CustomButton(
                         text: 'Sign In',
                         isLoading: authProvider.isLoading,
@@ -73,8 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         },
                       ),
+                      const SizedBox(height: 10),
                       TextButton(
-                        onPressed: () => context.go('/register'),
+                        onPressed: () => context.push('/register'),
                         child: const Text("Don't have an account? Register"),
                       ),
                     ],
@@ -92,10 +110,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       width: double.infinity,
       color: AppColors.navyBlue,
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.only(bottom: 40),
       child: const Column(
         children: [
           Icon(Icons.restaurant, color: Colors.white, size: 60),
+          SizedBox(height: 10),
           Text(
             'Campus Cafeteria',
             style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),

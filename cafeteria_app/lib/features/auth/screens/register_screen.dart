@@ -24,7 +24,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account'), backgroundColor: AppColors.navyBlue, foregroundColor: Colors.white),
+      appBar: AppBar(
+        title: const Text('Create Account'),
+        backgroundColor: AppColors.navyBlue,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -42,7 +47,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 DropdownMenuItem(value: 'admin', child: Text('Admin')),
               ],
               onChanged: (val) => setState(() => _role = val!),
-              decoration: const InputDecoration(labelText: 'Role'),
+              decoration: const InputDecoration(
+                labelText: 'Role',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 28),
             CustomButton(
@@ -56,11 +64,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _role,
                 );
                 if (res['success']) {
-                  context.go('/login');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Registration successful! Please login.')),
+                    );
+                    context.pop(); // Go back to Login or Landing
+                  }
                 } else {
-                  showDialog(context: context, builder: (ctx) => ErrorDialog(message: res['message']));
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => ErrorDialog(message: res['message']),
+                    );
+                  }
                 }
               },
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('Already have an account? Login', style: TextStyle(color: AppColors.navyBlue)),
             ),
           ],
         ),
