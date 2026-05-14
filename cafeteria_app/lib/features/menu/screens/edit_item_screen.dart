@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/menu_item_model.dart';
 import '../../../providers/menu_provider.dart';
@@ -7,16 +7,16 @@ import '../../../providers/auth_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../core/constants/app_colors.dart';
 
-class EditItemScreen extends StatefulWidget {
+class EditItemScreen extends ConsumerStatefulWidget {
   final MenuItemModel item;
 
   const EditItemScreen({super.key, required this.item});
 
   @override
-  State<EditItemScreen> createState() => _EditItemScreenState();
+  ConsumerState<EditItemScreen> createState() => _EditItemScreenState();
 }
 
-class _EditItemScreenState extends State<EditItemScreen> {
+class _EditItemScreenState extends ConsumerState<EditItemScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descController;
   late TextEditingController _priceController;
@@ -34,13 +34,22 @@ class _EditItemScreenState extends State<EditItemScreen> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _priceController.dispose();
+    _categoryController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Menu Item'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
+            icon: Icon(Icons.delete, color: AppColors.danger),
             onPressed: () => _confirmDelete(),
           ),
         ],
@@ -60,29 +69,36 @@ class _EditItemScreenState extends State<EditItemScreen> {
             SwitchListTile(
               title: const Text('Is Available'),
               value: _isAvailable,
-              activeColor: AppColors.orange,
+              activeThumbColor: AppColors.orange,
               onChanged: (val) => setState(() => _isAvailable = val),
             ),
             const SizedBox(height: 32),
             CustomButton(
               text: 'Save Changes',
               onPressed: () async {
-                final auth = Provider.of<AuthProvider>(context, listen: false);
+                final token = ref.read(authProvider).token;
+                if (token == null) return;
                 final updatedItem = MenuItemModel(
                   id: widget.item.id,
                   name: _nameController.text,
                   description: _descController.text,
-                  price: double.parse(_priceController.text),
+                  price: double.tryParse(_priceController.text) ?? 0.0,
                   category: _categoryController.text,
                   imageUrl: widget.item.imageUrl,
                 );
-                
-                // In a real scenario, you'd call a dedicated update method in MenuProvider
-                // For now, we'll reuse the logic or show success
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Item updated successfully')),
-                );
-                context.pop();
+
+                final err = await ref
+                    .read(menuProvider.notifier)
+                    .updateMenuItem(updatedItem, token);
+                if (!context.mounted) return;
+                if (err == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Item updated successfully')),
+                  );
+                  context.pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+                }
               },
             ),
           ],
@@ -118,7 +134,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
               Navigator.pop(ctx);
               context.pop();
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.danger)),
           ),
         ],
       ),

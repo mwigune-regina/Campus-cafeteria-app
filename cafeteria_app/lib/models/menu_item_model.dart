@@ -9,7 +9,7 @@ class MenuItemModel {
   MenuItemModel({
     required this.id,
     required this.name,
-    required this.description,
+    this.description = '',
     required this.price,
     this.imageUrl,
     required this.category,
@@ -19,8 +19,10 @@ class MenuItemModel {
     return MenuItemModel(
       id: json['id'],
       name: json['name'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
+      description: json['description'] ?? '',
+      price: (json['price'] is String)
+          ? double.parse(json['price'])
+          : (json['price'] as num).toDouble(),
       imageUrl: json['image_url'],
       category: json['category'],
     );

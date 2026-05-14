@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/menu_item_model.dart';
 import '../../../providers/menu_provider.dart';
@@ -7,14 +7,14 @@ import '../../../providers/auth_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../core/constants/app_colors.dart';
 
-class AddItemScreen extends StatefulWidget {
+class AddItemScreen extends ConsumerStatefulWidget {
   const AddItemScreen({super.key});
 
   @override
-  State<AddItemScreen> createState() => _AddItemScreenState();
+  ConsumerState<AddItemScreen> createState() => _AddItemScreenState();
 }
 
-class _AddItemScreenState extends State<AddItemScreen> {
+class _AddItemScreenState extends ConsumerState<AddItemScreen> {
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
   final _priceController = TextEditingController();
@@ -65,7 +65,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 }
 
                 setState(() => _isLoading = true);
-                final auth = Provider.of<AuthProvider>(context, listen: false);
+                final authState = ref.read(authProvider);
                 final item = MenuItemModel(
                   id: 0,
                   name: _nameController.text,
@@ -74,7 +74,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   category: _categoryController.text,
                 );
                 
-                final error = await Provider.of<MenuProvider>(context, listen: false).addMenuItem(item, auth.token!);
+                final error = await ref.read(menuProvider.notifier).addMenuItem(item, authState.token!);
                 setState(() => _isLoading = false);
                 
                 if (error == null) {

@@ -1,36 +1,77 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/cart_item_model.dart';
 import '../models/menu_item_model.dart';
 
-class CartProvider with ChangeNotifier {
-  final Map<int, CartItemModel> _items = {};
+class CartState {
+  final Map<int, CartItemModel> items;
 
-  List<CartItemModel> get items => _items.values.toList();
+  CartState({this.items = const {}});
+
+  List<CartItemModel> get itemList => items.values.toList();
   
   double get totalAmount {
     double total = 0.0;
-    _items.forEach((key, value) {
+    items.forEach((key, value) {
       total += value.totalPrice;
     });
     return total;
   }
 
+  CartState copyWith({Map<int, CartItemModel>? items}) {
+    return CartState(
+      items: items ?? this.items,
+    );
+  }
+}
+
+class CartNotifier extends StateNotifier<CartState> {
+  CartNotifier() : super(CartState());
+
   void addToCart(MenuItemModel item) {
-    if (_items.containsKey(item.id)) {
-      _items[item.id]!.quantity++;
+    final newItems = Map<int, CartItemModel>.from(state.items);
+    if (newItems.containsKey(item.id)) {
+      final existingItem = newItems[item.id]!;
+      newItems[item.id] = CartItemModel(
+        menuItem: existingItem.menuItem,
+        quantity: existingItem.quantity + 1,
+      );
     } else {
-      _items[item.id] = CartItemModel(menuItem: item);
+      newItems[item.id] = CartItemModel(menuItem: item);
     }
-    notifyListeners();
+    state = state.copyWith(items: newItems);
   }
 
   void removeFromCart(int id) {
-    _items.remove(id);
-    notifyListeners();
+    final newItems = Map<int, CartItemModel>.from(state.items);
+    newItems.remove(id);
+    state = state.copyWith(items: newItems);
+  }
+
+  void increment(int id) {
+    final newItems = Map<int, CartItemModel>.from(state.items);
+    final existing = newItems[id];
+    if (existing == null) return;
+    newItems[id] = CartItemModel(menuItem: existing.menuItem, quantity: existing.quantity + 1);
+    state = state.copyWith(items: newItems);
+  }
+
+  void decrement(int id) {
+    final newItems = Map<int, CartItemModel>.from(state.items);
+    final existing = newItems[id];
+    if (existing == null) return;
+    if (existing.quantity <= 1) {
+      newItems.remove(id);
+    } else {
+      newItems[id] = CartItemModel(menuItem: existing.menuItem, quantity: existing.quantity - 1);
+    }
+    state = state.copyWith(items: newItems);
   }
 
   void clearCart() {
-    _items.clear();
-    notifyListeners();
+    state = CartState();
   }
 }
+
+final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
+  return CartNotifier();
+});

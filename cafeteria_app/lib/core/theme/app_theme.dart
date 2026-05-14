@@ -1,26 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/app_colors.dart';
+import 'app_palette.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme {
+  AppTheme._();
+
+  /// Build a [ThemeData] from any palette. Material widgets get colors from
+  /// here; custom widgets that read `AppColors.*` get them from the
+  /// runtime palette.
+  static ThemeData fromPalette(AppPalette p) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: p.navyBlue,
+      brightness: p.brightness,
+      primary: p.navyBlue,
+      onPrimary: p.white,
+      secondary: p.orange,
+      onSecondary: p.white,
+      surface: p.surface,
+      onSurface: p.textDark,
+      error: p.danger,
+      onError: p.white,
+    );
+
+    final textTheme = GoogleFonts.robotoTextTheme(
+      ThemeData(brightness: p.brightness).textTheme,
+    ).apply(
+      bodyColor: p.textDark,
+      displayColor: p.textDark,
+    );
+
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.navyBlue,
-        primary: AppColors.navyBlue,
-        secondary: AppColors.orange,
-      ),
+      colorScheme: scheme,
+      brightness: p.brightness,
+      scaffoldBackgroundColor: p.pageBg,
       useMaterial3: true,
-      textTheme: GoogleFonts.robotoTextTheme(),
+      textTheme: textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: p.navyBlue,
+        foregroundColor: p.white,
+        elevation: 0,
+        centerTitle: true,
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.navyBlue,
-          foregroundColor: AppColors.white,
+          backgroundColor: p.navyBlue,
+          foregroundColor: p.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: p.navyBlue,
+      ),
     );
   }
+
+  static ThemeData get lightTheme => fromPalette(AppPalette.light);
 }

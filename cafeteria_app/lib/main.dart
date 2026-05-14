@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/constants/app_strings.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/theme_provider.dart';
 import 'app_router.dart';
-import 'providers/auth_provider.dart';
-import 'providers/menu_provider.dart';
-import 'providers/cart_provider.dart';
 
 void main() {
+  // Log the API URL once at startup so it's obvious from the debug console
+  // which host the app is actually targeting. Pass with --dart-define=API_HOST=...
+  debugPrint('[Cafeteria] Using API base URL: ${AppStrings.baseUrl}');
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => MenuProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-      ],
-      child: const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    final palette = ref.watch(themeProvider);
+
     return MaterialApp.router(
       title: 'Campus Cafeteria',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: AppRouter.router(context),
+      theme: AppTheme.fromPalette(palette),
+      routerConfig: router,
     );
   }
 }
