@@ -22,6 +22,7 @@ import 'features/wallet/screens/wallet_topup_screen.dart';
 import 'features/wallet/screens/wallet_topup_success_screen.dart';
 import 'features/wallet/screens/wallet_topup_failed_screen.dart';
 import 'features/profile/screens/profile_screen.dart';
+import 'features/profile/screens/personal_info_screen.dart';
 
 // Cashier
 import 'features/cashier/screens/cashier_dashboard_screen.dart';
@@ -128,6 +129,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/wallet', builder: (c, s) => const WalletHomeScreen()),
           GoRoute(path: '/orders', builder: (c, s) => const OrderHistoryScreen()),
           GoRoute(path: '/profile', builder: (c, s) => const ProfileScreen()),
+          GoRoute(
+            path: '/profile/personal-info',
+            builder: (c, s) => const PersonalInfoScreen(),
+          ),
         ],
       ),
 

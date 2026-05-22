@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/theme_provider.dart';
+import '../widgets/profile_avatar.dart';
 import '../widgets/theme_picker_sheet.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -36,34 +37,32 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Container(
+              // Fill the row width so this card matches the menu card below it
+              // (which is full-width because its rows are). Without this the card
+              // would shrink to its widest child (avatar/name/pill).
+              width: double.infinity,
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
+              // Even vertical breathing room top/bottom; the inner gaps below
+              // follow a ~1.6 rhythm (avatar->name : name->role) so the cluster
+              // reads as balanced now that the email line is gone.
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGray,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Icon(Icons.camera_alt_outlined, size: 44, color: AppColors.textLight),
-                  ),
+                  const ProfileAvatar(),
                   if (user != null) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 20),
                     Text(user.username,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: AppColors.textDark,
                         )),
-                    Text(user.email,
-                        style: TextStyle(color: AppColors.textLight, fontSize: 13)),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
@@ -92,7 +91,12 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  _row(Icons.info_outline, 'Personal information', onTap: () {}),
+                  // Personal-info screen lives in the student shell; only route
+                  // students there so cashiers don't land in the wrong shell.
+                  _row(Icons.info_outline, 'Personal information',
+                      onTap: user?.role == 'student'
+                          ? () => context.push('/profile/personal-info')
+                          : null),
                   _row(Icons.lock_outline, 'Privacy', onTap: () {}),
                   _row(Icons.notifications_outlined, 'Notifications', onTap: () {}),
                   _row(

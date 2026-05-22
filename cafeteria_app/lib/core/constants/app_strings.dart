@@ -17,7 +17,18 @@ class AppStrings {
   static const String _portOverride =
       String.fromEnvironment('API_PORT', defaultValue: '3000');
 
-  static String get baseUrl => 'http://$_hostOverride:$_portOverride/api';
+  static String get _origin => 'http://$_hostOverride:$_portOverride';
+
+  static String get baseUrl => '$_origin/api';
+
+  /// Resolves a server-relative upload path (e.g. `/uploads/avatars/x.jpg`)
+  /// into an absolute URL image widgets can load. Returns null for empty input
+  /// and passes already-absolute http(s) URLs through unchanged.
+  static String? resolveMediaUrl(String? path) {
+    if (path == null || path.isEmpty) return null;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return '$_origin$path';
+  }
 
   // Auth
   static const String loginTitle = "Welcome Back";

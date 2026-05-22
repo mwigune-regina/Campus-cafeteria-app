@@ -53,4 +53,32 @@ class AuthService {
       }),
     );
   }
+
+  Future<Map<String, dynamic>> updateProfile(
+    String token, {
+    String? registrationNumber,
+    int? yearOfStudy,
+  }) {
+    return ApiClient.patch(
+      Uri.parse('$_baseUrl/auth/me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'registration_number': registrationNumber,
+        'year_of_study': yearOfStudy,
+      }),
+    );
+  }
+
+  Future<Map<String, dynamic>> uploadAvatar(String token, String filePath) {
+    return ApiClient.uploadFile(
+      'PATCH',
+      Uri.parse('$_baseUrl/auth/me/avatar'),
+      fileField: 'avatar',
+      filePath: filePath,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+  }
 }

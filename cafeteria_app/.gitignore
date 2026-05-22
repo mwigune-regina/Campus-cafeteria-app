@@ -69,6 +69,9 @@ app.*.map.json
 # Backend specific
 /backend/.env
 /backend/node_modules/
+# User-uploaded files (keep the folder, ignore its contents)
+/backend/uploads/*
+!/backend/uploads/.gitkeep
 /backend/npm-debug.log*
 /backend/yarn-debug.log*
 /backend/yarn-error.log*

@@ -36,13 +36,33 @@ class ApiClient {
     return _run('DELETE', uri, () => http.delete(uri, headers: headers));
   }
 
+  /// Uploads a single file as multipart/form-data. Used for avatar uploads.
+  /// [fileField] is the form field name the backend expects (e.g. "avatar").
+  /// File uploads can be larger than JSON calls, so this uses a longer timeout.
+  static Future<Map<String, dynamic>> uploadFile(
+    String method,
+    Uri uri, {
+    required String fileField,
+    required String filePath,
+    Map<String, String>? headers,
+  }) {
+    return _run(method, uri, () async {
+      final request = http.MultipartRequest(method, uri);
+      if (headers != null) request.headers.addAll(headers);
+      request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+      final streamed = await request.send();
+      return http.Response.fromStream(streamed);
+    }, timeout: const Duration(seconds: 30));
+  }
+
   static Future<Map<String, dynamic>> _run(
     String method,
     Uri uri,
-    Future<http.Response> Function() send,
-  ) async {
+    Future<http.Response> Function() send, {
+    Duration? timeout,
+  }) async {
     try {
-      final res = await send().timeout(_timeout);
+      final res = await send().timeout(timeout ?? _timeout);
       debugPrint('[API] $method ${uri.toString()} -> ${res.statusCode}');
       try {
         final body = jsonDecode(res.body);
@@ -58,7 +78,7 @@ class ApiClient {
       debugPrint('[API] $method $uri -> TIMEOUT (10s)');
       return {
         'success': false,
-        'message': 'Server did not respond. Check that the backend is running and reachable.',
+        'message': 'Server did not respond.Check that the backend is running and reachable.',
       };
     } catch (e) {
       debugPrint('[API] $method $uri -> ERROR: $e');

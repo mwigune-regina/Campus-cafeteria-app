@@ -2,6 +2,13 @@
 -- Safe to re-run; uses IF NOT EXISTS / DROP CONSTRAINT IF EXISTS throughout.
 
 -- ----------------------------------------------------------------- users
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS registration_number VARCHAR(50);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS year_of_study SMALLINT;
+-- Guard the year range (separate so the column add stays IF NOT EXISTS-safe).
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_year_of_study_check;
+ALTER TABLE users ADD CONSTRAINT users_year_of_study_check
+    CHECK (year_of_study IS NULL OR year_of_study BETWEEN 1 AND 8);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS balance DECIMAL(10, 2) DEFAULT 0.00;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code VARCHAR(6);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_code_expires TIMESTAMP;

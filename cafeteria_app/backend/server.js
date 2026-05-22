@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -27,6 +28,15 @@ const authLimiter = rateLimit({
 
 app.use(cors());
 app.use(express.json());
+
+// Serve uploaded files (e.g. profile avatars) statically. Override helmet's
+// default same-origin CORP so the images load when fetched from the app's
+// separate origin (mobile clients and Flutter web).
+app.use(
+  '/uploads',
+  helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }),
+  express.static(path.join(__dirname, 'uploads'))
+);
 
 // Apply rate limiter specifically to auth routes
 app.use('/api/auth', authLimiter, authRoutes);
