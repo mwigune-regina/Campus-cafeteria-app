@@ -24,6 +24,7 @@ replay_pid*
 
 # VS Code related (Uncommented to prevent local editor settings leaks)
 .vscode/
+.idea/
 
 # Flutter/Dart/Pub related
 **/doc/api/

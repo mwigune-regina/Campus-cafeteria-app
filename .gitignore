@@ -1,0 +1,4 @@
+.idea/
+.idea/*
+**/ .idea/
+cafeteria_app/pubspec.lock
